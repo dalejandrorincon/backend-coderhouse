@@ -1,8 +1,10 @@
 {
-  "dogs": [
+  "items": [
     {
-      "name": "nelson",
-      "age": 2
+      "title": "Camiseta Titular Lecoqsportif Argentina 1986 - 10 Maradona",
+      "price": 2000,
+      "thumbnail": "http://placekitten.com/g/200/300",
+      "id": 1
     }
   ]
 }
