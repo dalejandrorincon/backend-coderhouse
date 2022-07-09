@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Camiseta Titular Lecoqsportif Argentina 1986 - 10 Maradona",
+    "price": 5250,
+    "thumbnail": "http://placekitten.com/g/300/300",
+    "id": 1
+  },
+  {
+    "title": "Camiseta Liverpool Luis Diaz O Personalizado Champions",
+    "price": 4500,
+    "thumbnail": "http://placekitten.com/g/300/302",
+    "id": 2
+  },
+  {
+    "title": "Camiseta Paris Messi 2022 Alterna",
+    "price": 4920,
+    "thumbnail": "http://placekitten.com/g/300/304",
+    "id": 3
+  }
+]
