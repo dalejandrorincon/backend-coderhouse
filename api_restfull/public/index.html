@@ -18,7 +18,7 @@
       <div class="py-5 text-center">
         <h2>Desafio API Restfull</h2>
       </div>
-      <form action="/api/productos/" method="POST" class="needs-validation">
+      <form action="/api/productos/" enctype="multipart/form-data" method="POST" class="needs-validation">
         <div class="row g-3">
           <div class="col-sm-6">
             <label for="productName" class="form-label">Nombre del producto</label>
@@ -29,11 +29,8 @@
             <input type="text" class="form-control" id="price"  name="price" >
           </div>
           <div class="col-md-12">
-            <label for="productImage" class="form-label">URL a la imagen del producto</label>
-            <input type="text" class="form-control" id="productImage" name="thumbnail">
-            <div class="invalid-feedback">
-              Ingrese un valor válido
-            </div>
+            <label for="thumbnail" class="form-label">Imagen del producto</label>
+            <input type="file" class="form-control" id="thumbnail" name="thumbnail">
           </div>
           <hr class="my-4">
           <button class="w-100 btn btn-primary btn-lg">Enviar datos</button>
