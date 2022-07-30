@@ -1,0 +1,29 @@
+<main>
+    <div class="container">
+      <div class="py-5 text-center">
+        <h1>Desafio Manejo de Plantillas - HandleBars</h1>
+      </div>
+  
+      <form action="/productos" method="POST" class="w-50 mx-auto">
+        <h2>Ingrese un producto</h2>
+        <div class="row g-3">
+          <div class="col-sm-12">
+            <label for="productName" class="form-label">Nombre del producto</label>
+            <input type="text" class="form-control" id="productName" name="nombre">
+          </div>
+          <div class="col-sm-12">
+            <label for="precio" class="form-label">Precio</label>
+            <input type="text" class="form-control" id="precio"  name="precio" >
+          </div>
+
+          <div class="col-sm-12">
+            <label for="foto" class="form-label">Foto URL</label>
+            <input type="text" class="form-control" id="foto"  name="foto" >
+          </div>
+          
+          <hr class="my-4">
+          <button class="w-100 btn btn-primary btn-lg">Enviar datos</button>
+        </div>
+      </form>
+    </div>
+  </main>
