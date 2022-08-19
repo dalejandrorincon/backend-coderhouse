@@ -1,0 +1,19 @@
+<div class="container mt-5">
+  <h2 class="text-center">Productos</h2>
+  {{#if listaProductos}}
+    <div class="row d-flex justify-content-center">
+      {{> itemListContainer }}
+    </div>
+  {{/if}}
+  {{#if administrador}}
+    <div class="row my-3">
+      <div class="w-75 mx-auto">
+      {{> form}}
+      </div>
+    </div>
+    {{else}}
+    <div class="col-sm-6 mx-auto text-center">
+      <span><a href="/login">Iniciar sesión</a> para agregar productos</span>
+    </div>
+  {{/if}}
+</div>

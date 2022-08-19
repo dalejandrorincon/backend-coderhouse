@@ -1,0 +1,36 @@
+<form action="/api/productos" method="POST" class="w-75 mx-auto">
+  <h2>Ingrese un producto</h2>
+  <div class="row g-3">
+    <div class="col-sm-6">
+      <label for="title" class="form-label">Nombre del producto</label>
+      <input type="text" class="form-control" id="title" name="title">
+    </div>
+
+    <div class="col-sm-6">
+      <label for="foto" class="form-label">Foto URL</label>
+      <input type="text" class="form-control" id="foto" name="thumbnail">
+    </div>
+
+    <div class="col-sm-4">
+      <label for="price" class="form-label">Precio</label>
+      <input type="number" class="form-control" id="price" name="price">
+    </div>
+    <div class="col-sm-4">
+      <label for="stock" class="form-label">Stock</label>
+      <input type="number" class="form-control" id="stock" name="stock">
+    </div>
+    <div class="col-sm-4">
+      <label for="sku" class="form-label">SKU</label>
+      <input type="text" class="form-control" id="sku" name="sku">
+    </div>
+
+
+    <div class="col-sm-12">
+      <label for="description" class="form-label">Descripción del producto</label>
+      <input type="text" class="form-control" id="description" name="description">
+    </div>
+
+    <hr class="my-4">
+    <button class="w-100 btn btn-primary btn-lg" type="submit">Agregar producto</button>
+  </div>
+</form>

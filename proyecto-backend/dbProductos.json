@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Costume icon",
+    "thumbnail": "https://cdn2.iconfinder.com/data/icons/national-clothes/512/taditional_clothes_people_culture_ethnic_costume-41-1024.png",
+    "price": "50000",
+    "stock": "10",
+    "sku": "17312",
+    "description": "Traditional costume icon from colombia",
+    "date": 1660873294337,
+    "id": 1
+  },
+  {
+    "price": "45000",
+    "title": "Costume icon Mexico",
+    "description": "Traditional costume icon from mexico",
+    "thumbnail": "https://cdn2.iconfinder.com/data/icons/national-clothes/512/taditional_clothes_people_culture_ethnic_costume-01-1024.png",
+    "sku": "17314",
+    "stock": "15",
+    "date": 1660875598835,
+    "id": 2
+  }
+]
