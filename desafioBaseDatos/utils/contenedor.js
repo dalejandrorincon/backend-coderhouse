@@ -1,57 +1,54 @@
 /* -------------------------- Definición módulo fs -------------------------- */
-const fs = require("fs");
-const encoding = "utf-8"
+// const fs = require("fs");
+// const encoding = "utf-8"
+const knex = require('knex');
+
 /* ----------------------- Definición clase contenedor ---------------------- */
 class Contenedor {
-    constructor(path) {
-        this.filePath = path;
-        this.createFileIfNotExists();
-        const data = fs.readFileSync(this.filePath, encoding);
-        this.contenedor = JSON.parse(data);
+    constructor(knexConfig, tableName) {
+        console.log(`TableName: ${tableName}`);
+        this.tableName = tableName;
+        this.knexConfig = require(knexConfig);
+        this.database = knex(this.knexConfig);
+        this.contenedor = this.getAll();
     }
 
-    createFileIfNotExists() {
-        if (!fs.existsSync(this.filePath)) {
-            fs.writeFileSync(this.filePath, "[]");
+    async save(object) {
+        let response = '';
+        try {
+            await this.database(this.tableName).insert(object);
+            response = ('Elemento agregado');
+        } catch (err) {
+            response = err;
         }
+        return response
     }
 
-    _saveAll (data) {
-        const stringData = JSON.stringify(data, null, 2);
-        fs.writeFileSync(this.filePath, stringData ,encoding)
-    }
-    
-    save(object) {
-        const lastId = this.contenedor.reduce(
-            (acc, el) => { // Funcion a evaluar para ir comparando el mayor de los ids
-            return el.id > acc ? el.id : acc 
-            }, 
-            0 // Acumulador inicial
-        );
-        const newId = lastId + 1;
-        object.id = newId;
-        this.contenedor.push(object);
-        this._saveAll(this.contenedor)
-        return newId;
+    async getById(id) {
+        const _object = await this.database(this.tableName)
+            .select()
+            .where('id', id);
+        this.contenedor = _object;
+        return this.contenedor
     }
 
-    getById (id) {
-        return this.contenedor.find(c => c.id === id);
-    }
-
-    getAll() {
+    async getAll() {
+        const objects = await this.database(this.tableName).select();
+        this.contenedor = objects
         return this.contenedor;
     }
 
-    deleteById(id) {
-        const filtered = this.contenedor.filter(el => el.id !== id);
-        this.contenedor = filtered;
-        this._saveAll(filtered);
-    }
-
-    deleteAll() {
-        this.contenedor = [];
-        this._saveAll([]);
+    async deleteById(id) {
+        let response = '';
+        try {
+            await this.database(this.tableName)
+                .where({ id: id })
+                .del()
+            response = ('Elemento eliminado');
+        } catch (err) {
+            response = err;
+        }
+        return response
     }
 }
 

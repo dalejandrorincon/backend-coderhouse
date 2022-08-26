@@ -13,11 +13,12 @@ const httpServer = new HTTPServer(app);
 const socketServer = new SocketServer(httpServer);
 
 const Contenedor = require('./utils/contenedor');
-const contenedorProductos = new Contenedor('./dbProductos.json');
-const contenedorMensajes = new Contenedor('./dbMensajes.json');
+const contenedorProductos = new Contenedor('../knexfile-products','productos');
+const contenedorMensajes = new Contenedor('../knexfile-mensajes','mensajes');
+
 const events = require('./socket_events');
 
-app.use('/producto', productRoutes);
+app.use('/productos', productRoutes);
 
 /* ------------------------------- HandleBars ------------------------------- */
 const handlebars = require("express-handlebars")
@@ -39,9 +40,12 @@ app.get('/', (req, res) => {
   res.render('main', {});
 });
 /* -------------------------------- WEBSOCKET ------------------------------- */
-socketServer.on('connection', (socket) => {
-  socket.emit(events.UPDATE_PRODUCTS, contenedorProductos.getAll());
-  socket.emit(events.UPDATE_MESSAGES, contenedorMensajes.getAll());
+socketServer.on('connection', async (socket) => {
+  const respuesta = await contenedorProductos.getAll();
+  const _respuesta = Object.values(JSON.parse(JSON.stringify(respuesta)))
+  // console.log(_respuesta);
+  socket.emit(events.UPDATE_PRODUCTS, _respuesta);
+  //socket.emit(events.UPDATE_MESSAGES, contenedorMensajes.getAll());
   
   socket.on(events.NEW_PRODUCT, (products) => {
     console.log(products)
@@ -52,8 +56,8 @@ socketServer.on('connection', (socket) => {
   socket.on(events.POST_MESSAGE,(msg)=>{
     const _msg = {
       ...msg, 
-      socket_id: socket.id, 
-      date: Date.now()
+      socket_id: socket.id 
+      //date: Date.now()
     };
     console.log(_msg.email);
     if(_msg.email){

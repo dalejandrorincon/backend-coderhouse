@@ -5,7 +5,8 @@ socket.on('connect', () => {
 });
 
 socket.on("UPDATE_PRODUCTS", (products) => {
-  const url = "http://localhost:3000/views/partials/tablaProductos.hbs";
+  console.log(products);
+  const url = "http://localhost:8080/views/partials/tablaProductos.hbs";
   fetch(url).then((resp) => {
     return resp.text();
   }).then((text) => {
