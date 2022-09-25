@@ -1,7 +1,10 @@
-module.exports = function (req, res, next) {
-  if (!req.session.user) {
-    res.redirect("/login");
-    return ;
-  } 
-  next();
+function checkAuth(req, res, next) {
+  console.log(`Usuario autenticado: ${req.isAuthenticated()}`);
+  if(req.isAuthenticated()){
+    next();
+  }else{
+    res.redirect('/login')
+  }
 }
+
+module.exports = checkAuth;

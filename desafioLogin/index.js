@@ -1,12 +1,90 @@
 const express = require('express');
+
+const auth = require("./middleware");
+const handlebars = require("express-handlebars");
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+const User = require("./user.schema");
+const {connect} = require('./database');
+const { isValidPassword, hashPassword } = require("./utils");
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const cookieParser = require('cookie-parser');
+
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
 
-const auth = require("./middleware");
-const handlebars = require("express-handlebars");
+connect();
+app.use(cookieParser());
+app.use(session({
+  store: new MongoStore({
+      mongoUrl: 'mongodb+srv://DiegoRincon:qRjCYM2SzzYll7ke@cluster0.o8xmg3v.mongodb.net/plataforma?retryWrites=true&w=majority',
+      ttl: 60 * 60 * 24 * 7,
+      retries: 0
+  }),
+  secret: "STRING_SECRET",
+  cookie: {
+    expires: 10 * 60 * 1000 //Expiración de sesión luego de 10 minutos
+  },
+  saveUninitialized: false,
+  resave: true,
+  rolling: true
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use("login", new LocalStrategy(
+  (username, password, done) => {
+    User.findOne({ username }, (err,user) => {
+      if(err){
+        return done(err)
+      }
+
+      if(!user){
+        console.log(`User not found with userName ${username}`);
+        return done(null,false);
+      }
+
+      if(!isValidPassword(user,password)){
+        console.log("Invalid password");
+        return done(null,false);
+      }
+
+      return done(null,user);
+    });
+
+}));
+
+passport.use("signup", new LocalStrategy({
+  passReqToCallback: true
+}, 
+async (req, username, password, done) => {
+  const user = await User.findOne({ username: username });
+  if (user) {
+    return done(new Error("User already exists."), null);
+  }
+  const userEmail = req.body.email;
+  const hasehdPassword = hashPassword(password);
+  const newUser = new User({
+    username,
+    password: hasehdPassword,
+    email: userEmail
+  });
+  await newUser.save();
+  return done(null, newUser);
+}));
+
+passport.serializeUser((user, done) => {
+  done(null, user._id);
+});
+
+passport.deserializeUser((id, done) => {
+  User.findById(id,done);
+});
 
 const hbs = handlebars.create({
   extname: ".hbs",
@@ -19,25 +97,6 @@ app.engine("hbs", hbs.engine);
 app.set("view engine", "hbs");
 app.set("views", "./views/pages");
 
-const session = require('express-session');
-
-// const MongoStore = require('connect-mongo');
-app.use(session({
-  // store: new MongoStore({
-  //     mongoUrl: 'mongodb+srv://DiegoRincon:qRjCYM2SzzYll7ke@cluster0.o8xmg3v.mongodb.net/?retryWrites=true&w=majority',
-  //     ttl: 60 * 60 * 24 * 7,
-  //     retries: 0
-  // }),
-  secret: "STRING_SECRET",
-  saveUninitialized: true,
-  resave: false,
-}));
-
-const usersWithPasswords = [
-  { username: 'user1', password: 'password1', address: 'address1' },
-  { username: 'user2', password: 'password2', address: 'address2' },
-  { username: 'user3', password: 'password3', address: 'address3' },
-];
 
 app.get("/", (req, res) => {
   res.redirect("/login");
@@ -51,48 +110,22 @@ app.get("/signup", (req, res) => {
   res.sendFile(__dirname + "/public/signup.html");
 });
 
-app.get("/profile", auth, (req, res) => { // Ruta privada
-  if (!req.session.contador) {
-    req.session.contador = 1;
-  } else {
-    req.session.contador++;
-  }
-  res.render("profile", {user: req.session.user, contador: req.session.contador});
+app.get('/home', auth,(req, res) => {
+  res.render("home", { user: req.session.user, contador: req.session.contador });
+})
+
+app.post("/login", passport.authenticate("login", {
+  failureRedirect: "/login",
+}) ,(req, res) => {
+  req.session.user = req.user;
+  res.redirect('/home');
 });
 
-app.post("/login", (req, res) => {
-  
-  const username = req.body.username;
-  const password = req.body.password;
-
-  const user = usersWithPasswords.find((user) => user.username === username);
-  if (!user || user.password !== password ) {
-    res.status(404).send({ // Not found
-      message: "Invalid username or password",
-    });
-    return ;
-  }
-  req.session.user = user;
-  res.redirect("/profile");
-});
-
-app.post("/signup", (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
-  const email = req.body.email;
-  // Verificar que el usuario no exista
-  const user = usersWithPasswords.find((user) => user.username === username);
-  if (user) { // Guard clause
-    res.status(400).send("User already exists"); // Status 400: Bad Request
-    return ; // undefined
-  }
-  usersWithPasswords.push({username, password, email});
-  //console.log(usersWithPasswords);
-  // res.send({
-  //   message: "User created successfully",
-  //   user: {username, email},
-  // });
-  res.redirect('/login');
+app.post("/signup", passport.authenticate("signup", {
+  failureRedirect: "/signup",
+}) , (req, res) => {  
+  req.session.user = req.user;
+  res.redirect("/login");
 });
 
 app.post("/logout", (req, res) => {
